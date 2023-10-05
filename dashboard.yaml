@@ -1,23 +1,43 @@
 button_card_templates:
+  full_width_card:
+    show_icon: false
+    show_label: true
+    color_type: card
+    background-color: teal
+    aspect_ratio: 5/3
+    border: 5px solid black
   navigation_card:
+    show_icon: false
+    show_label: true
+    aspect_ratio: 5/3
     styles:
-      card: 
+      card:
         - border-radius: 25px;
-        - border: 2px solid Cornsilk
+        - border: 5px solid black
         - font-family: Tahoma
         - padding: 10%
-        - background-color: GoldenRod
+        - color: black
+  navigation_card_number:
+    show_icon: false
+    show_label: true
+    aspect_ratio: 5/3
+    styles:
+      card:
+        - border-radius: 25px;
+        - border: 5px solid black
+        - font-family: Tahoma
+        - padding: 10%
         - color: black
   status_circle:
     styles:
       card:
-      - border-radius: 50%
-      - border: solid 5px black
-      - font-family: Tahoma
-      - font-size: 1rem
-      - padding: 10%
-      - background-color: teal
-      - color: white
+        - border-radius: 50%
+        - border: solid 5px black
+        - font-family: Tahoma
+        - font-size: 1rem
+        - padding: 10%
+        - background-color: teal
+        - color: white
     show_icon: false
     show_name: false
     aspect_ratio: 1/1
@@ -63,21 +83,22 @@ button_card_templates:
           card:
             - background-color: red
             - color: white
-    
 views:
   - title: Home
     type: custom:grid-layout
     layout:
-      grid-template-columns: 5% auto auto auto auto auto auto 5%
+      grid-template-columns: 10% auto auto auto auto auto auto 10%
       grid-template-rows: auto
       grid-template-areas: >
-        "header-left header-left header header header header header-right
-        header-right"  "main-row1 main-row1-2 main-row1-2 main-row1-2
-        main-row1-2 main-row1-2 main-row1-2 main-row1-3"   "main-row2 main-row2
-        main-row2 main-row2 main-row2 main-row2 main-row2 main-row2" "main-row3
+        "header-left header-left header-left header header header header-right
+        header-right"   "main-row1 main-row1-2 main-row1-2 main-row1-2
+        main-row1-2 main-row1-2 main-row1-2 main-row1-3"    "main-row2 main-row2
+        main-row2 main-row2 main-row2 main-row2 main-row2 main-row2"  "main-row3
         main-row3 main-row3 main-row3 main-row3 main-row3 main-row3 main-row3"
         "main-row4 main-row4 main-row4 main-row4 main-row4 main-row4 main-row4
-        main-row4" "footer footer footer footer footer footer footer footer"
+        main-row4"  "main-row5 main-row5 main-row5 main-row5 main-row5 main-row5
+        main-row5 main-row5" "footer footer footer footer footer footer footer
+        footer"
     cards:
       - type: horizontal-stack
         view_layout:
@@ -153,26 +174,9 @@ views:
                   border: none;
                 }
       - type: horizontal-stack
-        view_layout:
-          grid-area: main-row1-2
         cards:
           - type: custom:button-card
-            entity: input_select.house_mode
-            state_display: |
-              [[[
-                let house_state = states['input_select.house_mode'].state
-                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
-              ]]]
-            template: status_circle
-
-          - type: custom:button-card
             entity: sensor.sophamtning
-            show_icon: false
-            show_name: false
-            color_type: card
-            color: black
-            aspect_ratio: 1/1
-            show_state: true
             state_display: |
               [[[
                 let sophamtning = states['sensor.sophamtning'].state
@@ -187,41 +191,81 @@ views:
                 return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
               ]]]
             template: status_circle
+          - type: custom:button-card
+            entity: input_select.house_mode
+            state_display: |
+              [[[
+                let lights_on = states['sensor.total_lights_on'].state
+                return "Just nu är " + "<br>" + "<span style=font-weight:bold>" + lights_on + "</span>" + "<br>" + " lampor" + " tända."; 
+              ]]]
+            template: status_circle
+            card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: background: rgb(255,233,76);
+                      background: linear-gradient(235deg, rgba(255,233,76,1) 20%, rgba(255,255,255,1) 100%);
+                    }
+        view_layout:
+          grid-area: main-row1-2
       - type: custom:mushroom-title-card
         title: Navigate
         alignment: start
         view_layout:
           grid-area: main-row3
-
-          
-      - type: horizontal-stack
+      - type: vertical-stack
         view_layout:
           grid-area: main-row4
         cards:
-          - type: custom:button-card
-            template: navigation_card
-            entity: null
-            show_icon: false
-            label: Hej
-            show_label: true
-            aspect_ratio: 5/3
-            
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                template: navigation_card_number
+                entity: sensor.total_lights_on
+                show_name: false
+                show_state: true
+                label: Lights
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: background: rgb(255,233,76);
+                      background: linear-gradient(235deg, rgba(255,233,76,1) 0%, rgba(255,255,255,1) 100%);
+                    }
+              - type: custom:button-card
+                template: navigation_card
+                entity: null
+                label: Media Control
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: background: rgb(34,193,195);
+                      background: linear-gradient(135deg, rgba(34,193,195,1) 0%, rgba(255,255,255,1) 100%);
+                    }
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                template: navigation_card
+                entity: null
+                label: Energy Dashboard
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: background: rgb(84,255,76);
+                      background: linear-gradient(235deg, rgba(84,255,76,1) 0%, rgba(255,255,255,1) 100%);
+                    }
+              - type: custom:button-card
+                entity: null
+                template: navigation_card
+                label: Home Security
+                card_mod:
+                  style: |
+                    ha-card {
+                      --ha-card-background: background: rgb(251,15,15);
+                      background: linear-gradient(315deg, rgba(251,15,15,1) 0%, rgba(255,255,255,1) 100%);
+                    }
 
-
-            
-          - type: custom:button-card
-            entity: null
-            show_icon: false
-            label: Hej
-            show_label: true
-            color_type: card
-            color: black
-            aspect_ratio: 5/3
-            styles:
-              card:
-                - border-radius: 25px;
-                - border: 2px solid Cornsilk
-                - font-family: Tahoma
-                - padding: 10%
-                - background-color: GoldenRod
-                - color: black
+      - type: custom:button-card
+        template: full_width_card
+        entity: light.a_kontor_bordslampa
+        label: Test
+        view_layout:
+          grid-area: main-row5
