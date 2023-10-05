@@ -2,10 +2,14 @@ button_card_templates:
   full_width_card:
     show_icon: false
     show_label: true
-    color_type: card
-    background-color: teal
-    aspect_ratio: 5/3
+    aspect_ratio: 5/1
     border: 5px solid black
+    styles:
+      card:
+        - font-family: Tahoma
+        - font-size: 1.2rem
+        - background: var(--teal)
+        - border: 5px solid var(--dark_green)
   navigation_card:
     show_icon: false
     show_label: true
@@ -13,10 +17,11 @@ button_card_templates:
     styles:
       card:
         - border-radius: 25px;
-        - border: 5px solid black
+        - border: 5px solid var(--dark_green)
         - font-family: Tahoma
         - padding: 10%
         - color: black
+        - font-family: Montserrat
   navigation_card_number:
     show_icon: false
     show_label: true
@@ -28,6 +33,7 @@ button_card_templates:
         - font-family: Tahoma
         - padding: 10%
         - color: black
+        - font-family: Montserrat
   status_circle:
     styles:
       card:
@@ -36,69 +42,29 @@ button_card_templates:
         - font-family: Tahoma
         - font-size: 1rem
         - padding: 10%
-        - background-color: teal
+        - background-color: var(--blue)
         - color: white
+        - font-family: Montserrat
     show_icon: false
     show_name: false
     aspect_ratio: 1/1
     show_state: true
-    state:
-      - value: Morning
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: Work
-        styles:
-          card:
-            - background-color: blue
-            - color: white
-      - value: Evening
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: TV
-        styles:
-          card:
-            - background-color: green
-            - color: white
-      - value: Sleep
-        styles:
-          card:
-            - background-color: grey
-            - color: black
-      - value: Away
-        styles:
-          card:
-            - background-color: white
-            - color: black
-      - value: tomorrow
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: today
-        styles:
-          card:
-            - background-color: red
-            - color: white
 views:
   - title: Home
     type: custom:grid-layout
     layout:
-      grid-template-columns: 10% auto auto auto auto auto auto 10%
+      grid-template-columns: 10% auto auto auto auto 10%
       grid-template-rows: auto
       grid-template-areas: >
-        "header-left header-left header-left header header header header-right
-        header-right"   "main-row1 main-row1-2 main-row1-2 main-row1-2
-        main-row1-2 main-row1-2 main-row1-2 main-row1-3"    "main-row2 main-row2
-        main-row2 main-row2 main-row2 main-row2 main-row2 main-row2"  "main-row3
-        main-row3 main-row3 main-row3 main-row3 main-row3 main-row3 main-row3"
-        "main-row4 main-row4 main-row4 main-row4 main-row4 main-row4 main-row4
-        main-row4"  "main-row5 main-row5 main-row5 main-row5 main-row5 main-row5
-        main-row5 main-row5" "footer footer footer footer footer footer footer
-        footer"
+        "header-left header-left header-left header header-right header-right"   
+        "row1 row1 row1 row1 row1 row1"
+        "row2 row2 row2 row2 row2 row2"
+        "row3 row3 row3 row3 row3 row3"
+        "row4 row4 row4 row4 row4 row4"  
+        "row5 row5 row5 row5 row5 row5" 
+
+    theme: Antons-theme-1
+    badges: []
     cards:
       - type: horizontal-stack
         view_layout:
@@ -173,48 +139,28 @@ views:
                   background: none;
                   border: none;
                 }
-      - type: horizontal-stack
-        cards:
-          - type: custom:button-card
-            entity: sensor.sophamtning
-            state_display: |
-              [[[
-                let sophamtning = states['sensor.sophamtning'].state
-                return "Det är " + "<br>" + "<span style=font-weight:bold>" + sophamtning + "</span>" + "<br>" + " till" + "<br>" + " sophämtning"; 
-              ]]]
-            template: status_circle
-          - type: custom:button-card
-            entity: input_select.house_mode
-            state_display: |
-              [[[
-                let house_state = states['input_select.house_mode'].state
-                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
-              ]]]
-            template: status_circle
-          - type: custom:button-card
-            entity: input_select.house_mode
-            state_display: |
-              [[[
-                let lights_on = states['sensor.total_lights_on'].state
-                return "Just nu är " + "<br>" + "<span style=font-weight:bold>" + lights_on + "</span>" + "<br>" + " lampor" + " tända."; 
-              ]]]
-            template: status_circle
-            card_mod:
-                  style: |
-                    ha-card {
-                      --ha-card-background: background: rgb(255,233,76);
-                      background: linear-gradient(235deg, rgba(255,233,76,1) 20%, rgba(255,255,255,1) 100%);
-                    }
+
+      - type: custom:button-card
+        entity: input_select.house_mode
+        state_display: |
+          [[[
+            let house_state = states['input_select.house_mode'].state
+            return "The house is in " + "<span style=font-weight:bold>" + house_state + "</span>" + " mode."; 
+          ]]]
+        template: full_width_card
         view_layout:
-          grid-area: main-row1-2
+          grid-area: row1
+        show_state: true
+        show_name: false
+
       - type: custom:mushroom-title-card
         title: Navigate
         alignment: start
         view_layout:
-          grid-area: main-row3
+          grid-area: row3
       - type: vertical-stack
         view_layout:
-          grid-area: main-row4
+          grid-area: row4
         cards:
           - type: horizontal-stack
             cards:
@@ -262,10 +208,38 @@ views:
                       --ha-card-background: background: rgb(251,15,15);
                       background: linear-gradient(315deg, rgba(251,15,15,1) 0%, rgba(255,255,255,1) 100%);
                     }
-
       - type: custom:button-card
-        template: full_width_card
+        template: custom_card_light
         entity: light.a_kontor_bordslampa
-        label: Test
+        variables:
+          light_name: Bordslampa
+          light_label: Antons kontor
         view_layout:
-          grid-area: main-row5
+          grid-area: row5
+  - title: Todo
+    path: todo
+    badges: []
+    cards:
+      - type: markdown
+        content: |-
+          # Todo
+
+          ## Theme
+
+          ### Cameras
+
+          ### Lights
+          - Ändra kortet i main till "Smart home" och lägg lights
+          som ett kort där under istället
+
+          ### Media Control
+          - Radio
+          - Spotify
+          - TV
+          - Sonos x2
+
+          ### Rullgardin/Sovrum
+
+          ### Övrigt/idéer
+          - Kiosk mode
+          - Statistics per huvudkategori
