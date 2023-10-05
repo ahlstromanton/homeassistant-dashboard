@@ -1,0 +1,227 @@
+button_card_templates:
+  navigation_card:
+    styles:
+      card: 
+        - border-radius: 25px;
+        - border: 2px solid Cornsilk
+        - font-family: Tahoma
+        - padding: 10%
+        - background-color: GoldenRod
+        - color: black
+  status_circle:
+    styles:
+      card:
+      - border-radius: 50%
+      - border: solid 5px black
+      - font-family: Tahoma
+      - font-size: 1rem
+      - padding: 10%
+      - background-color: teal
+      - color: white
+    show_icon: false
+    show_name: false
+    aspect_ratio: 1/1
+    show_state: true
+    state:
+      - value: Morning
+        styles:
+          card:
+            - background-color: orange
+            - color: black
+      - value: Work
+        styles:
+          card:
+            - background-color: blue
+            - color: white
+      - value: Evening
+        styles:
+          card:
+            - background-color: orange
+            - color: black
+      - value: TV
+        styles:
+          card:
+            - background-color: green
+            - color: white
+      - value: Sleep
+        styles:
+          card:
+            - background-color: grey
+            - color: black
+      - value: Away
+        styles:
+          card:
+            - background-color: white
+            - color: black
+      - value: tomorrow
+        styles:
+          card:
+            - background-color: orange
+            - color: black
+      - value: today
+        styles:
+          card:
+            - background-color: red
+            - color: white
+    
+views:
+  - title: Home
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 5% auto auto auto auto auto auto 5%
+      grid-template-rows: auto
+      grid-template-areas: >
+        "header-left header-left header header header header header-right
+        header-right"  "main-row1 main-row1-2 main-row1-2 main-row1-2
+        main-row1-2 main-row1-2 main-row1-2 main-row1-3"   "main-row2 main-row2
+        main-row2 main-row2 main-row2 main-row2 main-row2 main-row2" "main-row3
+        main-row3 main-row3 main-row3 main-row3 main-row3 main-row3 main-row3"
+        "main-row4 main-row4 main-row4 main-row4 main-row4 main-row4 main-row4
+        main-row4" "footer footer footer footer footer footer footer footer"
+    cards:
+      - type: horizontal-stack
+        view_layout:
+          grid-area: header-left
+        cards:
+          - type: custom:mushroom-person-card
+            entity: person.anton
+            name: Anton
+            icon_type: entity-picture
+            layout: vertical
+            primary_info: none
+            secondary_info: none
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                }
+          - type: custom:mushroom-person-card
+            entity: person.kajsa
+            name: Kajsa
+            layout: vertical
+            icon_type: entity-picture
+            primary_info: none
+            secondary_info: none
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  margin: 0px;
+                }
+      - type: custom:mushroom-title-card
+        title: Home
+        alignment: center
+        view_layout:
+          grid-area: header
+      - type: horizontal-stack
+        view_layout:
+          grid-area: header-right
+        cards:
+          - type: custom:mushroom-alarm-control-panel-card
+            entity: alarm_control_panel.alarmo
+            states: []
+            layout: vertical
+            show_keypad: false
+            primary_info: none
+            secondary_info: none
+            fill_container: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                }
+          - type: custom:mushroom-template-card
+            primary: ''
+            secondary: ''
+            icon: mdi:cog
+            tap_action:
+              action: navigate
+              navigation_path: /config
+            layout: vertical
+            icon_color: grey
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                }
+      - type: horizontal-stack
+        view_layout:
+          grid-area: main-row1-2
+        cards:
+          - type: custom:button-card
+            entity: input_select.house_mode
+            state_display: |
+              [[[
+                let house_state = states['input_select.house_mode'].state
+                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
+              ]]]
+            template: status_circle
+
+          - type: custom:button-card
+            entity: sensor.sophamtning
+            show_icon: false
+            show_name: false
+            color_type: card
+            color: black
+            aspect_ratio: 1/1
+            show_state: true
+            state_display: |
+              [[[
+                let sophamtning = states['sensor.sophamtning'].state
+                return "Det är " + "<br>" + "<span style=font-weight:bold>" + sophamtning + "</span>" + "<br>" + " till" + "<br>" + " sophämtning"; 
+              ]]]
+            template: status_circle
+          - type: custom:button-card
+            entity: input_select.house_mode
+            state_display: |
+              [[[
+                let house_state = states['input_select.house_mode'].state
+                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
+              ]]]
+            template: status_circle
+      - type: custom:mushroom-title-card
+        title: Navigate
+        alignment: start
+        view_layout:
+          grid-area: main-row3
+
+          
+      - type: horizontal-stack
+        view_layout:
+          grid-area: main-row4
+        cards:
+          - type: custom:button-card
+            template: navigation_card
+            entity: null
+            show_icon: false
+            label: Hej
+            show_label: true
+            aspect_ratio: 5/3
+            
+
+
+            
+          - type: custom:button-card
+            entity: null
+            show_icon: false
+            label: Hej
+            show_label: true
+            color_type: card
+            color: black
+            aspect_ratio: 5/3
+            styles:
+              card:
+                - border-radius: 25px;
+                - border: 2px solid Cornsilk
+                - font-family: Tahoma
+                - padding: 10%
+                - background-color: GoldenRod
+                - color: black
