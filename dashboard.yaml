@@ -1,54 +1,88 @@
 button_card_templates:
-  full_width_card:
-    show_icon: false
+  nav_card:
     show_label: true
-    aspect_ratio: 5/1
-    border: 5px solid black
-    styles:
-      card:
-        - font-family: Tahoma
-        - font-size: 1.2rem
-        - background: var(--teal)
-        - border: 5px solid var(--dark_green)
-  navigation_card:
-    show_icon: false
-    show_label: true
-    aspect_ratio: 5/3
-    styles:
-      card:
-        - border-radius: 25px;
-        - border: 5px solid var(--dark_green)
-        - font-family: Tahoma
-        - padding: 10%
-        - color: black
-        - font-family: Montserrat
-  navigation_card_number:
-    show_icon: false
-    show_label: true
-    aspect_ratio: 5/3
-    styles:
-      card:
-        - border-radius: 25px;
-        - border: 5px solid black
-        - font-family: Tahoma
-        - padding: 10%
-        - color: black
-        - font-family: Montserrat
-  status_circle:
-    styles:
-      card:
-        - border-radius: 50%
-        - border: solid 5px black
-        - font-family: Tahoma
-        - font-size: 1rem
-        - padding: 10%
-        - background-color: var(--blue)
-        - color: white
-        - font-family: Montserrat
-    show_icon: false
     show_name: false
-    aspect_ratio: 1/1
+    show_icon: false
     show_state: true
+    aspect_ratio: 4/1
+    styles:
+      card:
+        - font-family: Montserrat
+        - font-size: 1rem
+        - background: var(--accent-secondary)
+        - border: 2px solid var(--accent)
+        - color: var(--text)
+        - box-shadow: 1px 1px 1px rgb(255, 255, 255, 0.3)
+      icon:
+        - color: var(--text)
+        - justify-self: center
+        - align-self: center
+        - width: 35px
+      label:
+        - font-size: 1rem
+        - justify-self: start
+        - align-self: center
+        - text-align: left
+      state:
+        - text-align: left
+        - justify-self: left
+        - align-self: center
+      grid:
+        - grid-template-columns: 0.5fr 1.5fr 1fr 1fr 0.5fr
+        - grid-template-rows: 1fr 1fr
+        - grid-template-areas: '". l s s ." ". l s s ."'
+        - row-gap: 8px
+  office_card:
+    show_label: true
+    show_name: false
+    show_icon: true
+    aspect_ratio: 6/1
+    styles:
+      card:
+        - font-family: Montserrat
+        - font-size: 1rem
+        - background: var(--accent-secondary)
+        - color: var(--grey)
+      icon:
+        - color: var(--grey)
+        - justify-self: center
+        - align-self: center
+        - width: 35px
+      label:
+        - font-size: 1.5rem
+        - justify-self: start
+        - align-self: center
+      state:
+        - text-align: left
+        - justify-self: start
+        - align-self: center
+      grid:
+        - grid-template-columns: 1fr 1fr 1fr 1fr
+        - grid-template-rows: 1fr
+        - grid-template-areas: '"i l l"'
+        - row-gap: 8px
+  transparent_full_width_card:
+    show_icon: false
+    show_label: true
+    aspect_ratio: 3/1
+    styles:
+      card:
+        - font-family: Montserrat
+        - font-size: 2.5rem
+        - background: none
+        - border: none
+        - overflow: visible
+      icon:
+        - color: white
+      state:
+        - text-align: center
+        - justify-self: center
+        - align-self: center
+        - color: var(--text)
+      grid:
+        - grid-template-columns: 1fr 1fr 1fr
+        - grid-template-rows: 1fr
+        - grid-template-areas: '"s s s"'
 views:
   - title: Home
     type: custom:grid-layout
@@ -56,13 +90,10 @@ views:
       grid-template-columns: 10% auto auto auto auto 10%
       grid-template-rows: auto
       grid-template-areas: >
-        "header-left header-left header-left header header-right header-right"   
-        "row1 row1 row1 row1 row1 row1"
-        "row2 row2 row2 row2 row2 row2"
-        "row3 row3 row3 row3 row3 row3"
-        "row4 row4 row4 row4 row4 row4"  
-        "row5 row5 row5 row5 row5 row5" 
-
+        "header-left header-left header header header-right header-right"    "row1 row1 row1
+        row1 row1 row1" "row2 row2 row2 row2 row2 ." "row3 row3 row3
+        row3 row3 row3" "row4 row4 row4
+        row4 row4 row4"   "row5 row5 row5 row5 row5 row5" "row6 row6 row6 row6 row6 row6"
     theme: Antons-theme-1
     badges: []
     cards:
@@ -102,6 +133,11 @@ views:
         alignment: center
         view_layout:
           grid-area: header
+        card_mod:
+          style: |
+            ha-card {
+            font-family: Montserrat;
+            }
       - type: horizontal-stack
         view_layout:
           grid-area: header-right
@@ -121,6 +157,8 @@ views:
                   border: none;
                 }
           - type: custom:mushroom-template-card
+            view_layout:
+              grid-area: row2
             primary: ''
             secondary: ''
             icon: mdi:cog
@@ -139,107 +177,92 @@ views:
                   background: none;
                   border: none;
                 }
-
       - type: custom:button-card
         entity: input_select.house_mode
         state_display: |
           [[[
             let house_state = states['input_select.house_mode'].state
-            return "The house is in " + "<span style=font-weight:bold>" + house_state + "</span>" + " mode."; 
+            return "The house " + "<br>" + "is in " + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode."; 
           ]]]
-        template: full_width_card
+        template: transparent_full_width_card
         view_layout:
           grid-area: row1
         show_state: true
         show_name: false
-
       - type: custom:mushroom-title-card
         title: Navigate
         alignment: start
         view_layout:
+          grid-area: row2
+        card_mod:
+          style: |
+            ha-card {
+            font-family: Montserrat;
+            }
+      - type: custom:button-card
+        view_layout:
           grid-area: row3
-      - type: vertical-stack
+        template: nav_card
+        entity: sensor.total_lights_on
+        label: Smart <br>Home
+        state_display: |
+          [[[
+          let totalLightsOn = states['sensor.total_lights_on']; 
+          let lightsOnMessage = totalLightsOn ? totalLightsOn.state + ' lights<br> currently on.' : '"No information " + "<br>" + "available."';
+          return lightsOnMessage;
+          ]]]
+      - type: custom:button-card
         view_layout:
           grid-area: row4
-        cards:
-          - type: horizontal-stack
-            cards:
-              - type: custom:button-card
-                template: navigation_card_number
-                entity: sensor.total_lights_on
-                show_name: false
-                show_state: true
-                label: Lights
-                card_mod:
-                  style: |
-                    ha-card {
-                      --ha-card-background: background: rgb(255,233,76);
-                      background: linear-gradient(235deg, rgba(255,233,76,1) 0%, rgba(255,255,255,1) 100%);
-                    }
-              - type: custom:button-card
-                template: navigation_card
-                entity: null
-                label: Media Control
-                card_mod:
-                  style: |
-                    ha-card {
-                      --ha-card-background: background: rgb(34,193,195);
-                      background: linear-gradient(135deg, rgba(34,193,195,1) 0%, rgba(255,255,255,1) 100%);
-                    }
-          - type: horizontal-stack
-            cards:
-              - type: custom:button-card
-                template: navigation_card
-                entity: null
-                label: Energy Dashboard
-                card_mod:
-                  style: |
-                    ha-card {
-                      --ha-card-background: background: rgb(84,255,76);
-                      background: linear-gradient(235deg, rgba(84,255,76,1) 0%, rgba(255,255,255,1) 100%);
-                    }
-              - type: custom:button-card
-                entity: null
-                template: navigation_card
-                label: Home Security
-                card_mod:
-                  style: |
-                    ha-card {
-                      --ha-card-background: background: rgb(251,15,15);
-                      background: linear-gradient(315deg, rgba(251,15,15,1) 0%, rgba(255,255,255,1) 100%);
-                    }
+        template: nav_card
+        label: Media <br>controls
+        icon: fas:compact-disc
+        state_display: |
+          [[[
+          let kontorPlayer = states['media_player.kontor'];
+          let vardagsrumPlayer = states['media_player.vardagsrum'];
+          let kontorPlaying = (kontorPlayer && kontorPlayer.state === 'playing' && kontorPlayer.attributes && kontorPlayer.attributes.media_title) ? kontorPlayer.attributes.media_title : null;
+          let vardagsrumPlaying = (vardagsrumPlayer && vardagsrumPlayer.state === 'playing' && vardagsrumPlayer.attributes && vardagsrumPlayer.attributes.media_title) ? vardagsrumPlayer.attributes.media_title : null;
+          let result = '';    
+          if (kontorPlaying && vardagsrumPlaying) {
+            result += kontorPlaying + '<br>';
+            result += 'is playing in Kontor<br><br>';
+            result += vardagsrumPlaying + '<br>';
+            result += 'is playing in Vardagsrum';
+          } else if (kontorPlaying) {
+            result += kontorPlaying + '<br>';
+            result += 'is playing in Kontor';
+          } else if (vardagsrumPlaying) {
+            result += vardagsrumPlaying + '<br>';
+            result += 'is playing in Vardagsrum';
+          } else {
+            result = 'Nothing playing';
+          }
+          return result;
+          ]]]
       - type: custom:button-card
-        template: custom_card_light
-        entity: light.a_kontor_bordslampa
-        variables:
-          light_name: Bordslampa
-          light_label: Antons kontor
         view_layout:
           grid-area: row5
-  - title: Todo
-    path: todo
-    badges: []
-    cards:
-      - type: markdown
-        content: |-
-          # Todo
-
-          ## Theme
-
-          ### Cameras
-
-          ### Lights
-          - Ändra kortet i main till "Smart home" och lägg lights
-          som ett kort där under istället
-
-          ### Media Control
-          - Radio
-          - Spotify
-          - TV
-          - Sonos x2
-
-          ### Rullgardin/Sovrum
-
-          ### Övrigt/idéer
-          - Kiosk mode
-          - Statistics per huvudkategori
+        template: nav_card
+        entity: sensor.develco_zhemi101_instantaneous_demand
+        label: Energy <br>Dashboard
+        state_display: |
+          [[[
+            let powerDrawSensor = states['sensor.develco_zhemi101_instantaneous_demand']; // Replace 'sensor.develco_zhemi101_instantaneous_demand' with your actual sensor entity ID
+            let powerDrawMessage = powerDrawSensor ? 'Current power draw: '+ '<br>' + powerDrawSensor.state + ' kWh' : 'No information available.';
+            return powerDrawMessage;
+          ]]]
+        icon: fas:leaf
+      - type: custom:button-card
+        view_layout:
+          grid-area: row6
+        template: nav_card
+        entity: alarm_control_panel.alarmo
+        label: Home <br>Security
+        state_display: |
+          [[[
+            let alarmStatus = states['alarm_control_panel.alarmo']; // Replace 'alarm_control_panel.alarmo' with your actual entity ID for the house alarm
+            let alarmMessage = alarmStatus ? 'House alarm is <br>currently ' + alarmStatus.state + '.' : 'No alarm information available.';
+            return alarmMessage;
+          ]]]
+        icon: fas:user-shield
