@@ -1,227 +1,1787 @@
-button_card_templates:
-  navigation_card:
-    styles:
-      card: 
-        - border-radius: 25px;
-        - border: 2px solid Cornsilk
-        - font-family: Tahoma
-        - padding: 10%
-        - background-color: GoldenRod
-        - color: black
-  status_circle:
-    styles:
-      card:
-      - border-radius: 50%
-      - border: solid 5px black
-      - font-family: Tahoma
-      - font-size: 1rem
-      - padding: 10%
-      - background-color: teal
-      - color: white
-    show_icon: false
-    show_name: false
-    aspect_ratio: 1/1
-    show_state: true
-    state:
-      - value: Morning
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: Work
-        styles:
-          card:
-            - background-color: blue
-            - color: white
-      - value: Evening
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: TV
-        styles:
-          card:
-            - background-color: green
-            - color: white
-      - value: Sleep
-        styles:
-          card:
-            - background-color: grey
-            - color: black
-      - value: Away
-        styles:
-          card:
-            - background-color: white
-            - color: black
-      - value: tomorrow
-        styles:
-          card:
-            - background-color: orange
-            - color: black
-      - value: today
-        styles:
-          card:
-            - background-color: red
-            - color: white
-    
+kiosk_mode:
+  hide_header: true
+  hide_sidebar: true
+sidebar:
+  width:
+    mobile: 0
+    tablet: 25
+    desktop: 20
+  digitalClock: true
+  date: true
+  sidebarMenu:
+    - action: navigate
+      navigation_path: /wallpanel-house-2/0
+      name: home
+      icon: mdi:home-circle-outline
+    - action: navigate
+      navigation_path: /wallpanel-house-2/lights
+      name: lights
+      icon: mdi:lightbulb-group-outline
+    - action: navigate
+      navigation_path: /wallpanel-house-2/statistics
+      name: statistics
+      icon: mdi:chart-line
+    - action: navigate
+      navigation_path: /wallpanel-house-2/security
+      name: security
+      icon: mdi:cctv
+    - action: navigate
+      navigation_path: /wallpanel-house-2/vacuum
+      name: vacuum
+      icon: mdi:robot-vacuum
+    - action: navigate
+      navigation_path: /wallpanel-house-2/media
+      name: media
+      icon: mdi:music-circle-outline
+  bottomCard:
+    type: horizontal-stack
+    cardOptions:
+      cards:
+        - type: vertical-stack
+          cards:
+            - type: custom:button-card
+              template: title
+              name: find phone
+            - type: custom:button-card
+              template: sensor
+              action: call-service
+              service: script.find_antons_phone
+              color_type: card
+              entity: script.find_antons_phone
+              color: rgb(155, 155, 155)
+              icon: mdi:phone
+              show_state: false
+              show_name: false
 views:
-  - title: Home
+  - title: home
     type: custom:grid-layout
     layout:
-      grid-template-columns: 5% auto auto auto auto auto auto 5%
-      grid-template-rows: auto
-      grid-template-areas: >
-        "header-left header-left header header header header header-right
-        header-right"  "main-row1 main-row1-2 main-row1-2 main-row1-2
-        main-row1-2 main-row1-2 main-row1-2 main-row1-3"   "main-row2 main-row2
-        main-row2 main-row2 main-row2 main-row2 main-row2 main-row2" "main-row3
-        main-row3 main-row3 main-row3 main-row3 main-row3 main-row3 main-row3"
-        "main-row4 main-row4 main-row4 main-row4 main-row4 main-row4 main-row4
-        main-row4" "footer footer footer footer footer footer footer footer"
+      grid-template-columns: 40% 1fr 1fr
+      grid-template-rows: 9% 19% 20% 9% 13% 9% 13% 8%
+      grid-gap-left: 10px
+      grid-gap-right: 10px
+      grid-template-areas: |
+        "weather-t energy-t water-t"
+        "weather energy water"
+        "weather sensor sensor"
+        "scenes-t clean-t ."
+        "scenes clean clean"
+        "modes-t media-t ."
+        "modes media media"
+        ". . ."
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:home
+                name: full
+                tap_action:
+                  action: call-service
+                  service: vacuum.start
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+                confirmation:
+                  text: Are you sure you want to start a full clean?
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:knife
+                name: kök
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.clean_kitchen
+                confirmation:
+                  text: Are you sure you want to clean the kitchen?
+              - type: custom:button-card
+                template: button_single
+                icon: >
+                  [[[ return states['vacuum.roborock_s6_pure'].state ===
+                  'cleaning' ? 'mdi:pause-box-outline' : 'mdi:play-box-outline';
+                  ]]]
+                name: >
+                  [[[ return states['vacuum.roborock_s6_pure'].state ===
+                  'cleaning' ? 'Stop' : 'Start'; ]]]
+                tap_action:
+                  action: call-service
+                  service: >
+                    [[[ return states['vacuum.roborock_s6_pure'].state ===
+                    'cleaning' ? 'vacuum.pause' : 'vacuum.start'; ]]]
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+                confirmation:
+                  text: Start/pause?
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:robot-vacuum-off
+                name: dock
+                tap_action:
+                  action: call-service
+                  service: vacuum.return_to_base
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+                confirmation:
+                  text: Return to the dock?
+        view_layout:
+          grid-area: clean
+      - type: custom:weather-card
+        entity: weather.smhi_home
+        details: true
+        hourly_forecast: false
+        forecast: true
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(0, 0, 0, 0);
+              border: none;
+            }
+        view_layout:
+          grid-area: weather
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.weekly_energy_use
+            show_state: true
+            show_graph: true
+          - entity: sensor.weekly_energy_cost
+            show_state: true
+            show_graph: false
+        hours_to_show: 168
+        points_per_hour: 1
+        animate: true
+        decimals: 1
+        hour24: true
+        show:
+          icon: false
+          graph: chart
+        color_thresholds:
+          - value: 0
+            color: '#22ff00'
+          - value: 140
+            color: '#ffd500'
+          - value: 210
+            color: '#ff3700'
+        height: 100
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(0, 0, 0, 0);
+              border: none;
+            }
+        view_layout:
+          grid-area: energy
+      - type: custom:button-card
+        name: weather
+        template: title
+        card_mod:
+          style: |
+            :host {
+              height: 
+            }
+        view_layout:
+          grid-area: weather-t
+      - type: custom:button-card
+        name: energy
+        template: title
+        view_layout:
+          grid-area: energy-t
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.weekly_energy_use
+            show_state: true
+            show_graph: false
+          - entity: sensor.weekly_energy_cost
+            show_state: true
+            show_graph: false
+          - entity: sensor.daily_energy_used
+            show_state: false
+            show_graph: true
+        hours_to_show: 168
+        points_per_hour: 1
+        animate: true
+        decimals: 1
+        hour24: true
+        show:
+          icon: false
+          graph: chart
+        color_thresholds:
+          - value: 0
+            color: '#22ff00'
+          - value: 25
+            color: '#ffd500'
+          - value: 35
+            color: '#ff3700'
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(0, 0, 0, 0);
+              border: none;
+            }
+        view_layout:
+          grid-area: energy
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.water_used_weekly
+            show_state: true
+            show_graph: false
+          - entity: sensor.weekly_water_cost
+            color: blue
+            show_state: true
+            show_graph: false
+          - entity: sensor.water_used_daily
+            show_state: false
+            show_graph: true
+        hours_to_show: 168
+        points_per_hour: 1
+        animate: true
+        decimals: 1
+        hour24: true
+        show:
+          icon: false
+          graph: chart
+        color_thresholds:
+          - value: 0
+            color: '#22ff00'
+          - value: 300
+            color: '#ffd500'
+          - value: 400
+            color: '#ff3700'
+        height: 100
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(0, 0, 0, 0);
+              border: none;
+            }
+        view_layout:
+          grid-area: water
+      - type: custom:button-card
+        name: water
+        template: title
+        view_layout:
+          grid-area: water-t
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: temps
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: sensor.vardagsrum_hue_motion_temperature
+                layout: vertical
+                secondary_info: state
+                name: Matplats
+                card_mod: null
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 0);
+                    border: none;
+                  }
+              - type: custom:mushroom-entity-card
+                entity: sensor.lumi_lumi_curtain_acn002_device_temperature
+                layout: vertical
+                secondary_info: state
+                name: Sovrum
+                card_mod: null
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 0);
+                    border: none;
+                  }
+              - type: custom:mushroom-entity-card
+                entity: sensor.lumi_lumi_sensor_magnet_aq2_device_temperature
+                layout: vertical
+                secondary_info: state
+                name: Hall
+                card_mod: null
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 0);
+                    border: none;
+                  }
+              - type: custom:mushroom-entity-card
+                entity: sensor.uterum_temperatur
+                layout: vertical
+                secondary_info: state
+                name: Uterum
+                card_mod: null
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 0);
+                    border: none;
+                  }
+              - type: custom:mushroom-entity-card
+                entity: sensor.utetemperatur
+                layout: vertical
+                secondary_info: state
+                name: Ute
+                card_mod: null
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 0);
+                    border: none;
+                  }
+        view_layout:
+          grid-area: sensor
+      - type: custom:button-card
+        name: scenes
+        template: title
+        view_layout:
+          grid-area: scenes-t
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            template: button_single
+            entity: input_boolean.tv_mode
+            name: tv-ljus
+            show_state: false
+            icon: fas:tv
+          - type: custom:button-card
+            template: button_single
+            entity: script.vardagsljus_nedervaning
+            name: normal
+            show_state: false
+            icon: mdi:lightbulb-group-outline
+          - type: custom:button-card
+            template: button_single
+            entity: script.stadljus_nedervaning
+            name: städljus
+            show_state: false
+            icon: mdi:lightbulb-group
+        view_layout:
+          grid-area: scenes
+      - type: custom:button-card
+        template: title
+        name: vacuum
+        view_layout:
+          grid-area: clean-t
+      - type: custom:button-card
+        template: title
+        name: media
+        view_layout:
+          grid-area: media-t
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:play-box
+                name: play
+                tap_action:
+                  action: call-service
+                  service: script.media_player_vardagsrum_play
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:pause-box
+                name: pause
+                tap_action:
+                  action: call-service
+                  service: script.media_player_vardagsrum_pause
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:volume-plus
+                name: vol up
+                tap_action:
+                  action: call-service
+                  service: script.media_player_vardagsrum_volume_up
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:volume-minus
+                name: vol down
+                tap_action:
+                  action: call-service
+                  service: script.media_player_vardagsrum_volume_down
+        view_layout:
+          grid-area: media
+      - type: custom:button-card
+        name: house modes
+        template: title
+        view_layout:
+          grid-area: modes-t
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            template: light
+            entity: input_boolean.guest_mode
+            name: guests
+            show_state: false
+            icon: mdi:account-multiple
+          - type: custom:button-card
+            template: light
+            entity: input_select.house_mode
+            attribute: day
+            name: day
+            show_state: false
+            icon: mdi:weather-sunny
+          - type: custom:button-card
+            template: light
+            entity: input_select.house_mode
+            attribute: evening
+            name: night
+            show_state: false
+            icon: mdi:moon-waxing-crescent
+        view_layout:
+          grid-area: modes
+  - title: Statistics
+    path: statistics
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 1fr 1fr 1fr
+      grid-template-rows: auto auto auto auto
+      grid-gap: 10px
+      grid-template-areas: |
+        "energy energy energy"
+        "energyett energyett energyett"
+        "energytva energytva ."
+        "c4 c4 c4"
+    badges: []
     cards:
       - type: horizontal-stack
-        view_layout:
-          grid-area: header-left
         cards:
-          - type: custom:mushroom-person-card
-            entity: person.anton
-            name: Anton
-            icon_type: entity-picture
-            layout: vertical
-            primary_info: none
-            secondary_info: none
-            card_mod:
-              style: |
-                ha-card {
-                  background: none;
-                  border: none;
-                }
-          - type: custom:mushroom-person-card
-            entity: person.kajsa
-            name: Kajsa
-            layout: vertical
-            icon_type: entity-picture
-            primary_info: none
-            secondary_info: none
-            card_mod:
-              style: |
-                ha-card {
-                  background: none;
-                  border: none;
-                  margin: 0px;
-                }
-      - type: custom:mushroom-title-card
-        title: Home
-        alignment: center
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.daily_energy_used
+                show_state: false
+                show_graph: true
+              - entity: sensor.daily_energy_cost
+                color: blue
+                show_state: true
+                show_graph: false
+            hours_to_show: 24
+            points_per_hour: 1
+            animate: true
+            decimals: 1
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: 0
+                color: '#22ff00'
+              - value: 20
+                color: '#ffd500'
+              - value: 30
+                color: '#ff3700'
+          - type: custom:mini-graph-card
+            label: Weekly
+            entities:
+              - entity: sensor.weekly_energy_use
+                show_state: false
+                show_graph: true
+              - entity: sensor.weekly_energy_cost
+                color: blue
+                show_state: true
+                show_graph: false
+            hours_to_show: 168
+            points_per_hour: 1
+            animate: true
+            decimals: 0
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: 0
+                color: '#22ff00'
+              - value: 140
+                color: '#ffd500'
+              - value: 210
+                color: '#ff3700'
+          - type: custom:mini-graph-card
+            label: Weekly
+            entities:
+              - entity: sensor.monthly_energy_use
+                show_state: false
+                show_graph: true
+              - entity: sensor.monthly_energy_cost
+                color: blue
+                show_state: true
+                show_graph: false
+            hours_to_show: 720
+            points_per_hour: 1
+            animate: true
+            decimals: 0
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: 0
+                color: '#22ff00'
+              - value: 600
+                color: '#ffd500'
+              - value: 900
+                color: '#ff3700'
         view_layout:
-          grid-area: header
+          grid-area: energy
       - type: horizontal-stack
-        view_layout:
-          grid-area: header-right
         cards:
-          - type: custom:mushroom-alarm-control-panel-card
-            entity: alarm_control_panel.alarmo
-            states: []
-            layout: vertical
-            show_keypad: false
-            primary_info: none
-            secondary_info: none
-            fill_container: false
-            card_mod:
-              style: |
-                ha-card {
-                  background: none;
-                  border: none;
-                }
-          - type: custom:mushroom-template-card
-            primary: ''
-            secondary: ''
-            icon: mdi:cog
-            tap_action:
-              action: navigate
-              navigation_path: /config
-            layout: vertical
-            icon_color: grey
-            hold_action:
-              action: none
-            double_tap_action:
-              action: none
-            card_mod:
-              style: |
-                ha-card {
-                  background: none;
-                  border: none;
-                }
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.daily_cost_comparison
+                show_state: true
+                show_graph: true
+                name: Daily savings / Current hourly price / Current diff
+              - entity: sensor.nordpool_kwh_se3_sek_3_10_025
+                show_state: true
+                show_graph: false
+              - entity: sensor.current_energy_tariff_diff
+                decimals: 3
+                show_state: true
+                show_graph: false
+            hours_to_show: 24
+            points_per_hour: 1
+            animate: true
+            decimals: 2
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: -50
+                color: '#22ff00'
+              - value: 0
+                color: '#ffd500'
+              - value: 50
+                color: '#ff3700'
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.weekly_cost_comparison
+                show_state: true
+                show_graph: true
+                name: Weekly savings / Current hourly price / Current diff
+              - entity: sensor.nordpool_kwh_se3_sek_3_10_025
+                color: blue
+                show_state: true
+                show_graph: false
+              - entity: sensor.current_energy_tariff_diff
+                show_state: true
+                show_graph: false
+            hours_to_show: 168
+            points_per_hour: 1
+            animate: true
+            decimals: 2
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: -350
+                color: '#22ff00'
+              - value: 0
+                color: '#ffd500'
+              - value: 350
+                color: '#ff3700'
+          - type: custom:mini-graph-card
+            entities:
+              - entity: sensor.monthly_cost_comparison
+                show_state: true
+                show_graph: true
+                name: Monthly savings / Current hourly price / Current diff
+              - entity: sensor.nordpool_kwh_se3_sek_3_10_025
+                color: blue
+                show_state: true
+                show_graph: false
+              - entity: sensor.current_energy_tariff_diff
+                show_state: true
+                show_graph: false
+            hours_to_show: 720
+            points_per_hour: 1
+            animate: true
+            decimals: 2
+            hour24: true
+            show:
+              icon: false
+              graph: chart
+            color_thresholds:
+              - value: 300
+                color: '#22ff00'
+              - value: 0
+                color: '#ffd500'
+              - value: 300
+                color: '#ff3700'
+        view_layout:
+          grid-area: energyett
       - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.nordpool_kwh_se3_sek_3_10_025
+            needle: true
+            severity:
+              green: 0
+              yellow: 1
+              red: 2
+            min: 0
+            theme: Soft UI
+            name: Hourly rate
+            max: 3
+          - type: gauge
+            entity: sensor.current_energy_tariff_diff
+            needle: true
+            severity:
+              green: -10
+              yellow: 0
+              red: 0
+            min: -10
+            max: 10
+            theme: Soft UI
+            name: Rate compared to hourly
         view_layout:
-          grid-area: main-row1-2
+          grid-area: energytva
+  - title: Security
+    path: security
+    icon: mdi:cctv
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 16% 1fr 16%
+      grid-template-rows: auto auto
+      grid-gap: 10px
+      grid-template-areas: |
+        ". camera1 ."
+        ". camera2 ."
+    badges: []
+    cards:
+      - type: custom:frigate-card
+        cameras:
+          - camera_entity: camera.garden_frigate
+            live_provider: webrtc-card
+        view:
+          default: live
+          dark_mode: auto
+        menu:
+          style: none
+          buttons:
+            frigate:
+              enabled: true
+        live:
+          show_image_during_load: true
+        view_layout:
+          grid-area: camera1
+      - type: custom:frigate-card
+        cameras:
+          - camera_entity: camera.entrance_frigate
+            live_provider: webrtc-card
+        view:
+          default: live
+          dark_mode: auto
+        menu:
+          style: none
+          buttons:
+            frigate:
+              enabled: true
+        live:
+          show_image_during_load: true
+        view_layout:
+          grid-area: camera2
+  - title: lights
+    path: lights
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 1fr 1fr 1fr
+      grid-template-rows: auto auto
+      grid-gap: 10px
+      grid-template-areas: |
+        "vardagsrum matplats mat-hall"
+        "a-kontor k-kontor sovrum"
+    badges: []
+    cards:
+      - type: vertical-stack
         cards:
           - type: custom:button-card
-            entity: input_select.house_mode
-            state_display: |
-              [[[
-                let house_state = states['input_select.house_mode'].state
-                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
-              ]]]
-            template: status_circle
-
-          - type: custom:button-card
-            entity: sensor.sophamtning
-            show_icon: false
-            show_name: false
-            color_type: card
-            color: black
-            aspect_ratio: 1/1
-            show_state: true
-            state_display: |
-              [[[
-                let sophamtning = states['sensor.sophamtning'].state
-                return "Det är " + "<br>" + "<span style=font-weight:bold>" + sophamtning + "</span>" + "<br>" + " till" + "<br>" + " sophämtning"; 
-              ]]]
-            template: status_circle
-          - type: custom:button-card
-            entity: input_select.house_mode
-            state_display: |
-              [[[
-                let house_state = states['input_select.house_mode'].state
-                return "House is in " + "<br>" + "<span style=font-weight:bold>" + house_state + "</span>" + "<br>" + " mode"; 
-              ]]]
-            template: status_circle
-      - type: custom:mushroom-title-card
-        title: Navigate
-        alignment: start
+            template: title
+            name: vardagsrum
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_vagglampa_arm
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            name: Armlampa
+            attribute: icon
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_fonsterlampa_marmor
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            name: Fönsterlampa Marmor
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_golvlampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            name: Golvlampa
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_bubbellampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: true
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            name: Bubbellampa
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_fonsterlampa_svamp
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: true
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            name: Fönsterlampa Svamp
         view_layout:
-          grid-area: main-row3
-
-          
-      - type: horizontal-stack
-        view_layout:
-          grid-area: main-row4
+          grid-area: vardagsrum
+      - type: vertical-stack
         cards:
           - type: custom:button-card
-            template: navigation_card
-            entity: null
-            show_icon: false
-            label: Hej
-            show_label: true
-            aspect_ratio: 5/3
-            
-
-
-            
+            template: title
+            name: matplats
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_skap_orange
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: mdi:lamp
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Skåp Orange
+          - type: custom:slider-button-card
+            entity: light.vardagsrum_skapslampa_bred_switch
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: mdi:lamp
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Skåp Bred
           - type: custom:button-card
-            entity: null
-            show_icon: false
-            label: Hej
-            show_label: true
-            color_type: card
-            color: black
-            aspect_ratio: 5/3
-            styles:
-              card:
-                - border-radius: 25px;
-                - border: 2px solid Cornsilk
-                - font-family: Tahoma
-                - padding: 10%
-                - background-color: GoldenRod
-                - color: black
+            template: title
+            name: hall
+          - type: custom:slider-button-card
+            entity: light.hall_taklampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Taklampa
+        view_layout:
+          grid-area: matplats
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: utomhus
+          - type: custom:slider-button-card
+            entity: light.uterum_takbelysning_switch
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: true
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: mdi:string-lights
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Uterum Slinga
+          - type: custom:slider-button-card
+            entity: light.framsida_utelampa_huelight
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: mdi:coach-lamp
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Entre
+        view_layout:
+          grid-area: mat-hall
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: antons kontor
+          - type: custom:slider-button-card
+            entity: light.a_kontor_bokhylla_filament
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Bokhylla
+          - type: custom:slider-button-card
+            entity: light.a_kontor_fonsterlampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Fönsterlampa
+          - type: custom:slider-button-card
+            entity: light.a_kontor_hogtalarlampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Högtalarlampa
+          - type: custom:slider-button-card
+            entity: light.a_kontor_bordslampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Bordslampa
+          - type: custom:slider-button-card
+            entity: light.a_kontor_golvlampa_lampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Golvlampa
+          - type: custom:slider-button-card
+            entity: light.a_kontor_led
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: true
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: LED-list
+        view_layout:
+          grid-area: a-kontor
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: kajsa kontor
+          - type: custom:slider-button-card
+            entity: light.k_kontor_bollampa_lampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Bollampa
+          - type: custom:slider-button-card
+            entity: light.k_kontor_fonsterlampa_lampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Fönsterlampa
+          - type: custom:slider-button-card
+            entity: light.k_kontor_rislampa_lampa
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Rislampa
+        view_layout:
+          grid-area: k-kontor
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: sovrum
+          - type: custom:slider-button-card
+            entity: light.sovrum_taklampa_huelight
+            slider:
+              direction: left-right
+              background: gradient
+              use_state_color: true
+              use_percentage_bg_opacity: true
+              show_track: true
+              toggle_on_click: false
+              force_square: false
+              show_attribute: false
+            show_name: true
+            show_state: false
+            compact: true
+            icon:
+              show: true
+              use_state_color: true
+              tap_action:
+                action: more-info
+              icon: ''
+            action_button:
+              mode: custom
+              icon: mdi:power
+              show: true
+              show_spinner: true
+              tap_action:
+                action: toggle
+            show_attribute: false
+            style: |
+              :host {
+                --primary-color: red;
+              }
+            name: Taklampa
+          - type: custom:bubble-card
+            card_type: cover
+            entity: cover.lumi_lumi_curtain_acn002_cover
+            name: Rullgardin
+        view_layout:
+          grid-area: sovrum
+  - title: media
+    path: media
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 1fr 1fr 1fr
+      grid-template-rows: auto auto
+      grid-gap: 10px
+      grid-template-areas: |
+        ". . ."
+        ". . ."
+    badges: []
+    cards: []
+  - title: vacuum
+    path: vacuum
+    theme: Soft UI
+    type: custom:grid-layout
+    layout:
+      grid-template-columns: 10% 1fr 10%
+      grid-template-rows: auto
+      grid-gap: 10px
+      grid-template-areas: |
+        ". vacuum ."
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:button-card
+            template: title
+            name: vacuum
+          - type: custom:vacuum-card
+            entity: vacuum.roborock_s6_pure
+            shortcuts:
+              - name: Clean Kitchen
+                icon: mdi:silverware-fork-knife
+                service: script.clean_kitchen
+            stats:
+              default:
+                - entity_id: sensor.roborock_s6_pure_filter_left
+                  value_template: '{{ (value | float(0) / 3600) | round(1) }}'
+                  unit: hours
+                  subtitle: Filter kvar
+                - entity_id: sensor.roborock_s6_pure_main_brush_left
+                  value_template: '{{ (value | float(0) / 3600) | round(1) }}'
+                  unit: hours
+                  subtitle: Huvudborste kvar
+                - entity_id: sensor.roborock_s6_pure_side_brush_left
+                  value_template: '{{ (value | float(0) / 3600) | round(1) }}'
+                  unit: hours
+                  subtitle: Sidoborste kvar
+                - entity_id: sensor.roborock_s6_pure_sensor_dirty_left
+                  value_template: '{{ (value | float(0) / 3600) | round(1) }}'
+                  unit: hours
+                  subtitle: Sensortid kvar
+                - entity_id: sensor.roborock_s6_pure_starttid_for_senaste_stadningen
+                  value_template: '{{ as_timestamp(value) | timestamp_custom(''%d %B'', true) }}'
+                  subtitle: Senaste städning
+              cleaning:
+                - entity_id: sensor.roborock_s6_pure_current_clean_area
+                  subtitle: Städad area
+                - entity_id: sensor.roborock_s6_pure_last_clean_duration
+                  value_template: '{{ (value | float(0) / 60) | round(1) }}'
+                  unit: minutes
+                  subtitle: Städtid
+          - type: custom:button-card
+            template: title
+            name: quick actions
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:home
+                name: full
+                tap_action:
+                  action: call-service
+                  service: vacuum.start
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:knife
+                name: kök
+                tap_action:
+                  action: call-service
+                  service: script.turn_on
+                  service_data:
+                    entity_id: script.clean_kitchen
+              - type: custom:button-card
+                template: button_single
+                icon: >
+                  [[[ return states['vacuum.roborock_s6_pure'].state ===
+                  'cleaning' ? 'mdi:pause-box-outline' : 'mdi:play-box-outline';
+                  ]]]
+                name: >
+                  [[[ return states['vacuum.roborock_s6_pure'].state ===
+                  'cleaning' ? 'Stop' : 'Start'; ]]]
+                tap_action:
+                  action: call-service
+                  service: >
+                    [[[ return states['vacuum.roborock_s6_pure'].state ===
+                    'cleaning' ? 'vacuum.pause' : 'vacuum.start'; ]]]
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+              - type: custom:button-card
+                template: button_single
+                icon: mdi:robot-vacuum-off
+                name: dock
+                tap_action:
+                  action: call-service
+                  service: vacuum.return_to_base
+                  service_data:
+                    entity_id: vacuum.roborock_s6_pure
+        view_layout:
+          grid-area: vacuum
+background: var(--lovelace-background)
+button_card_templates:
+  title:
+    styles:
+      card:
+        - height: 100%
+        - margin-top: 5px
+        - border: none
+        - background: none
+      img_cell:
+        - align-self: start
+        - text-align: start
+      name:
+        - justify-self: start
+        - padding-left: 10px
+        - text-transform: lowercase
+        - font-size: 25px
+        - letter-spacing: 0.1em
+        - font-family: Montserrat
+    card_mod:
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none; 
+        }
+  light:
+    size: 35%
+    show_state: true
+    tap_action:
+      haptic: heavy
+      action: toggle
+    styles:
+      icon:
+        - color: rgb(var(--my-grey),0.8)
+      card:
+        - width: 120px
+        - height: 120px
+        - margin: auto
+      grid:
+        - grid-template-areas: '"i" "n" "s"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr min-content min-content
+      img_cell:
+        - align-self: start
+        - text-align: start
+        - justify-content: start
+        - padding-left: 15px
+      name:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - letter-spacing: 0.2em
+        - font-size: 17px
+        - padding-bottom: 2px
+      state:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - letter-spacing: 0.2em
+        - font-size: 12px
+        - opacity: 0.6
+        - padding-bottom: 5px
+        - opacity: 0.6
+    state:
+      - value: 'on'
+        styles:
+          icon:
+            - color: rgb(var(--my-orange))
+          card:
+            - background-color: rgba(var(--my-orange),0.2)
+            - box-shadow: var(--my-box-shadow)
+    card_mod:
+      class: soft-ui
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none;    
+        }
+  sensor:
+    size: 40%
+    show_state: true
+    tap_action:
+      haptic: heavy
+      action: toggle
+    styles:
+      card:
+        - width: 80px
+        - height: 80px
+        - border-radius: 40px
+        - box-shadow: rgba(var(--my-orange), 0.3) 0px -50px 36px -28px inset;
+        - border: none
+      icon:
+        - color: rgba(var(--my-orange), 1)
+      grid:
+        - grid-template-areas: '"n" "i" "s"'
+        - grid-template-rows: min-content 40px min-content
+      name:
+        - width: 80px
+        - height: 20px
+        - font-size: 14px
+        - font-weight: light
+        - letter-spacing: 0.1em
+      img_cell: null
+      state:
+        - font-size: 14px
+        - justify-self: bottom
+        - text-align: center
+        - letter-spacing: 0.2em
+        - font-weight: bold
+    card_mod:
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none;  
+        }
+  vacuum:
+    size: 35%
+    show_state: true
+    tap_action:
+      haptic: heavy
+      action: more-info
+    styles:
+      icon:
+        - color: rgb(var(--my-grey),0.8)
+      card:
+        - width: 120px
+        - height: 120px
+        - margin: auto
+      grid:
+        - grid-template-areas: '"i" "n" "s"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr min-content min-content
+      img_cell:
+        - align-self: start
+        - text-align: start
+        - justify-content: start
+        - padding-left: 15px
+      name:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - letter-spacing: 0.2em
+        - font-size: 17px
+        - padding-bottom: 2px
+      state:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - font-size: 12px
+        - opacity: 0.6
+        - letter-spacing: 0.2em
+        - padding-bottom: 5px
+        - opacity: 0.6
+    state:
+      - value: cleaning
+        styles:
+          icon:
+            - color: rgb(var(--my-orange))
+            - animation: rotating 2s ease infinite
+          card:
+            - background-color: rgba(var(--my-orange),0.2)
+            - box-shadow: var(--my-box-shadow)
+    card_mod:
+      class: soft-ui
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none;  
+        }
+  portail:
+    size: 35%
+    show_state: true
+    tap_action:
+      haptic: heavy
+      action: toggle
+    styles:
+      icon:
+        - color: rgb(var(--my-green),0.8)
+      card:
+        - width: 120px
+        - height: 120px
+        - margin: auto
+      grid:
+        - grid-template-areas: '"i" "n" "s"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr min-content min-content
+      img_cell:
+        - align-self: start
+        - text-align: start
+        - justify-content: start
+        - padding-left: 15px
+      name:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - letter-spacing: 0.2em
+        - font-size: 17px
+        - padding-bottom: 2px
+      state:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - font-size: 12px
+        - opacity: 0.6
+        - letter-spacing: 0.2em
+        - padding-bottom: 5px
+        - opacity: 0.6
+    state:
+      - value: 'on'
+        icon: mdi:gate-open
+        styles:
+          icon:
+            - color: rgb(var(--my-red))
+            - animation: blink 2s ease infinite
+          card:
+            - background-color: rgba(var(--my-red),0.2)
+            - box-shadow: var(--my-box-shadow)
+    card_mod:
+      class: soft-ui
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none;  
+        }
+  button_single:
+    show_state: true
+    styles:
+      icon:
+        - color: rgba(var(--my-blue),0.8)
+      card:
+        - width: 120px
+        - height: 120px
+        - margin: auto
+      grid:
+        - grid-template-areas: '"i" "n" "s"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr min-content min-content
+      img_cell:
+        - align-self: start
+        - text-align: start
+        - justify-content: start
+        - padding-left: 15px
+      name:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - text-transform: lowercase
+        - letter-spacing: 0.2em
+        - font-size: 17px
+        - padding-bottom: 2px
+      state:
+        - justify-self: start
+        - padding-left: 12px
+        - font-weight: bold
+        - font-size: 12px
+        - opacity: 0.6
+        - letter-spacing: 0.2em
+        - padding-bottom: 5px
+        - opacity: 0.6
+    card_mod:
+      class: soft-ui
+      style: |
+        ha-card {
+          background: rgba(0, 0, 0, 0);
+          border: none;  
+        }
+  frame:
+    color_type: label-card
+    styles:
+      card:
+        - padding: 0
+        - background-color: transparent
+        - opacity: 100%
+        - margin: 0 auto
+      grid:
+        - grid-template-areas: '"buttons"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr min-content min-content
+      custom_fields:
+        buttons:
+          - margin: 0
+          - padding: 0.5em
+          - position: relative
+          - left: 0
